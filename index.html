@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blind Shop App</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #000;
+        color: #fff;
+    }
+    button {
+        width: 80%;
+        padding: 20px;
+        margin: 10px;
+        font-size: 20px;
+        border-radius: 10px;
+    }
+</style>
+</head>
+<body>
+
+<h1 aria-label="แอปซื้อของสำหรับผู้พิการทางสายตา">Blind Shop</h1>
+
+<button onclick="addToCart('ข้าวสาร')" aria-label="เพิ่มข้าวสารลงตะกร้า">
+เพิ่ม ข้าวสาร
+</button>
+
+<button onclick="addToCart('น้ำดื่ม')" aria-label="เพิ่มน้ำดื่มลงตะกร้า">
+เพิ่ม น้ำดื่ม
+</button>
+
+<button onclick="checkout()" aria-label="ชำระเงิน">
+ชำระเงิน
+</button>
+
+<button onclick="startVoiceCommand()" aria-label="เริ่มคำสั่งเสียง">
+สั่งงานด้วยเสียง
+</button>
+
+<script>
+let cart = [];
+
+function speak(text) {
+    let speech = new SpeechSynthesisUtterance(text);
+    speech.lang = "th-TH";
+    window.speechSynthesis.speak(speech);
+}
+
+function addToCart(item) {
+    cart.push(item);
+    speak("เพิ่ม " + item + " ลงตะกร้าแล้ว");
+}
+
+function checkout() {
+    if (cart.length === 0) {
+        speak("ยังไม่มีสินค้าในตะกร้า");
+    } else {
+        speak("คุณมีสินค้า " + cart.join(", ") + " กำลังดำเนินการชำระเงิน");
+    }
+}
+
+function startVoiceCommand() {
+    let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = "th-TH";
+    recognition.start();
+
+    recognition.onresult = function(event) {
+        let command = event.results[0][0].transcript;
+
+        if (command.includes("ข้าวสาร")) {
+            addToCart("ข้าวสาร");
+        } else if (command.includes("น้ำ")) {
+            addToCart("น้ำดื่ม");
+        } else if (command.includes("ชำระ")) {
+            checkout();
+        } else {
+            speak("ไม่เข้าใจคำสั่ง");
+        }
+    };
+}
+</script>
+
+</body>
+</html>
